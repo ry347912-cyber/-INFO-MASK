@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .btn { padding: 10px 20px; margin: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <h1>Download Test Page</h1>
+    <p>This page tests the download functionality.</p>
+    
+    <button class="btn" onclick="testDownload()">Test Download</button>
+    <button class="btn" onclick="testBlobDownload()">Test Blob Download</button>
+    
+    <div id="result"></div>
+    
+    <script>
+        function testDownload() {
+            const link = document.createElement('a');
+            link.href = 'data:text/plain;base64,SGVsbG8gV29ybGQ=';
+            link.download = 'test.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            document.getElementById('result').innerHTML = '<p>Basic download test completed</p>';
+        }
+        
+        function testBlobDownload() {
+            try {
+                const blob = new Blob(['Hello World'], {type: 'text/plain'});
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'test_blob.txt';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                document.getElementById('result').innerHTML = '<p>Blob download test completed</p>';
+            } catch (error) {
+                document.getElementById('result').innerHTML = '<p>Blob download failed: ' + error.message + '</p>';
+            }
+        }
+    </script>
+</body>
+</html> 

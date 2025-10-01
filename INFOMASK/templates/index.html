@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>InfoMask</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: #e9ecef;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-upload input[type=file] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-upload-label {
+            display: block;
+            padding: 15px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .file-upload-label:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .file-upload-label i {
+            font-size: 2rem;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Special styling for the main download button */
+        .main-download-btn {
+            background: white !important;
+            color: #ff6b35 !important;
+            font-size: 1.2rem !important;
+            padding: 20px 30px !important;
+            border: 3px solid white !important;
+            font-weight: bold !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+            border-radius: 15px !important;
+            margin: 20px 0 !important;
+            min-width: 250px !important;
+            max-width: 90% !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .main-download-btn:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.5) !important;
+            background: #fff8f0 !important;
+            border-color: #ff6b35 !important;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result.active {
+            display: block !important;
+            min-height: 200px;
+            overflow: visible;
+        }
+
+        .result.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .result.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .result-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-btn {
+            background: #28a745;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+        }
+
+        .alternative-btn {
+            background: #17a2b8;
+        }
+
+        .alternative-btn:hover {
+            background: #138496;
+        }
+
+        .help-btn {
+            background: #6c757d;
+        }
+
+        .help-btn:hover {
+            background: #5a6268;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box h3 {
+            color: #0066cc;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+        }
+
+        .info-box li {
+            margin-bottom: 5px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .button-group .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .notification-banner {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            z-index: 1000;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .notification-banner.success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+        }
+
+        .notification-banner.error {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.3);
+        }
+
+        .notification-banner.info {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+            box-shadow: 0 10px 30px rgba(23, 162, 184, 0.3);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateX(-50%) translateY(-100%); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .notification-banner.show {
+            display: block;
+        }
+
+        .floating-download {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+            z-index: 1000;
+            display: none;
+            animation: bounce 2s infinite;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .floating-download.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .main-download-btn {
+                font-size: 1rem !important;
+                padding: 15px 20px !important;
+                min-width: 200px !important;
+                max-width: 95% !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-download-btn {
+                font-size: 0.9rem !important;
+                padding: 12px 16px !important;
+                min-width: 180px !important;
+                max-width: 98% !important;
+            }
+            
+            .content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-eye-slash"></i> InfoMask</h1>
+            <p>Hide and extract secret messages in images using advanced steganography techniques</p>
+        </div>
+
+        <div class="content">
+            
+
+             <div class="info-box">
+                 <h3><i class="fas fa-info-circle"></i> How it works</h3>
+                 <ul>
+                     <li><strong>Hide Text:</strong> Upload an image and enter your secret message. Choose between LSB or DCT encryption methods.</li>
+                     <li><strong>Hide Image:</strong> Upload a cover image and a secret image. The secret image will be hidden inside the cover image using optimized LSB steganography.</li>
+                     <li><strong>LSB Method:</strong> Ultra-fast and simple - embeds data in the least significant bits of pixels using vectorized operations.</li>
+                     <li><strong>DCT Method:</strong> Advanced and robust - uses Discrete Cosine Transform for better resistance to compression and attacks.</li>
+                     <li><strong>Extract Text/Image:</strong> Upload an image that contains hidden content and extract it using the same method.</li>
+                     <li><strong>Performance:</strong> Optimized algorithms provide lightning-fast processing even for large images.</li>
+                     <li><strong>Security:</strong> The hidden content is invisible to the human eye and doesn't significantly alter the image appearance.</li>
+                 </ul>
+             </div>
+
+
+
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('hide')">
+                    <i class="fas fa-eye-slash"></i> Hide Text
+                </button>
+                <button class="tab" onclick="switchTab('extract')">
+                    <i class="fas fa-eye"></i> Extract Text
+                </button>
+                <button class="tab" onclick="switchTab('hide-image')">
+                    <i class="fas fa-images"></i> Hide Image
+                </button>
+                <button class="tab" onclick="switchTab('extract-image')">
+                    <i class="fas fa-search"></i> Extract Image
+                </button>
+            </div>
+
+            <!-- Hide Text Tab -->
+            <div id="hide-tab" class="tab-content active">
+                <form id="hide-form">
+                    <div class="form-group">
+                        <label for="hide-image">Select Image:</label>
+                        <div class="file-upload">
+                            <input type="file" id="hide-image" name="image" accept="image/*" required>
+                            <label for="hide-image" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload image or drag and drop</div>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, GIF, BMP
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hide-encryption">Encryption Method:</label>
+                        <select id="hide-encryption" name="encryption_method" class="text-input" style="height: auto; min-height: 50px;">
+                            <option value="lsb">LSB (Least Significant Bit) - Fast & Simple</option>
+                            <option value="dct">DCT (Discrete Cosine Transform) - Advanced & Robust</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hide-text">Secret Message:</label>
+                        <textarea id="hide-text" name="text" class="text-input" placeholder="Enter your secret message here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-eye-slash"></i> Hide Text in Image
+                    </button>
+                </form>
+
+                <div class="loading" id="hide-loading">
+                    <div class="spinner"></div>
+                    <p>Processing image...</p>
+                </div>
+
+                                 <div class="result" id="hide-result"></div>
+            </div>
+
+            <!-- Extract Text Tab -->
+            <div id="extract-tab" class="tab-content">
+                <form id="extract-form">
+                    <div class="form-group">
+                        <label for="extract-image">Select Image with Hidden Text:</label>
+                        <div class="file-upload">
+                            <input type="file" id="extract-image" name="image" accept="image/*" required>
+                            <label for="extract-image" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload image or drag and drop</div>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, GIF, BMP
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="extract-encryption">Encryption Method Used:</label>
+                        <select id="extract-encryption" name="encryption_method" class="text-input" style="height: auto; min-height: 50px;">
+                            <option value="lsb">LSB (Least Significant Bit)</option>
+                            <option value="dct">DCT (Discrete Cosine Transform)</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-eye"></i> Extract Hidden Text
+                    </button>
+                </form>
+
+                <div class="loading" id="extract-loading">
+                    <div class="spinner"></div>
+                    <p>Extracting text...</p>
+                </div>
+
+                <div class="result" id="extract-result"></div>
+            </div>
+
+            <!-- Hide Image Tab -->
+            <div id="hide-image-tab" class="tab-content">
+                <form id="hide-image-form">
+                    <div class="form-group">
+                        <label for="cover-image">Cover Image (Image to hide in):</label>
+                        <div class="file-upload">
+                            <input type="file" id="cover-image" name="cover_image" accept="image/*" required>
+                            <label for="cover-image" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload cover image or drag and drop</div>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, GIF, BMP
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="secret-image">Secret Image (Image to hide):</label>
+                        <div class="file-upload">
+                            <input type="file" id="secret-image" name="secret_image" accept="image/*" required>
+                            <label for="secret-image" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload secret image or drag and drop</div>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, GIF, BMP
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-images"></i> Hide Image in Image
+                    </button>
+                </form>
+
+                <div class="loading" id="hide-image-loading">
+                    <div class="spinner"></div>
+                    <p>Processing images...</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                        <i class="fas fa-info-circle"></i> Optimized for speed - this should be fast!
+                    </p>
+                </div>
+
+                <div class="result" id="hide-image-result"></div>
+            </div>
+
+            <!-- Extract Image Tab -->
+            <div id="extract-image-tab" class="tab-content">
+                <form id="extract-image-form">
+                    <div class="form-group">
+                        <label for="stego-image">Stego Image (Image with hidden content):</label>
+                        <div class="file-upload">
+                            <input type="file" id="stego-image" name="stego_image" accept="image/*" required>
+                            <label for="stego-image" class="file-upload-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Click to upload stego image or drag and drop</div>
+                                <div style="font-size: 0.9rem; color: #666; margin-top: 5px;">
+                                    Supported formats: JPG, PNG, GIF, BMP
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn">
+                        <i class="fas fa-search"></i> Extract Hidden Image
+                    </button>
+                </form>
+
+                <div class="loading" id="extract-image-loading">
+                    <div class="spinner"></div>
+                    <p>Extracting image...</p>
+                    <p style="font-size: 0.9rem; color: #666; margin-top: 10px;">
+                        <i class="fas fa-info-circle"></i> Optimized for speed - this should be fast!
+                    </p>
+                </div>
+
+                <div class="result" id="extract-image-result"></div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Handle file upload display
+        function handleFileSelect(input) {
+            const label = input.nextElementSibling;
+            if (input.files && input.files[0]) {
+                label.innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                    <div>${input.files[0].name}</div>
+                    <div style="font-size: 0.9rem; color: #666;">File selected</div>
+                `;
+            }
+        }
+
+        document.getElementById('hide-image').addEventListener('change', function() {
+            handleFileSelect(this);
+        });
+
+        document.getElementById('extract-image').addEventListener('change', function() {
+            handleFileSelect(this);
+        });
+
+        document.getElementById('cover-image').addEventListener('change', function() {
+            handleFileSelect(this);
+        });
+
+        document.getElementById('secret-image').addEventListener('change', function() {
+            handleFileSelect(this);
+        });
+
+        document.getElementById('stego-image').addEventListener('change', function() {
+            handleFileSelect(this);
+        });
+
+        // Handle hide form submission
+        document.getElementById('hide-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loading = document.getElementById('hide-loading');
+            const result = document.getElementById('hide-result');
+            
+            // Get encryption method
+            const encryptionMethod = document.getElementById('hide-encryption').value;
+            formData.append('encryption_method', encryptionMethod);
+            
+            console.log('Form submitted, showing loading...');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            result.classList.remove('active');
+            result.innerHTML = '';
+             
+
+            
+            try {
+                console.log('Sending request to /hide...');
+                const response = await fetch('/hide', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response received, status:', response.status);
+                const data = await response.json();
+                
+                console.log('Hide response data:', data);
+                console.log('Success:', data.success);
+                console.log('Image length:', data.image ? data.image.length : 'undefined');
+                console.log('Filename:', data.filename);
+                
+                                 if (data.success) {
+                     console.log('Creating success result HTML...');
+                     console.log('Data received:', data);
+                     console.log('Message:', data.message);
+                     console.log('Filename:', data.filename);
+                     console.log('Image data length:', data.image ? data.image.length : 'undefined');
+                     
+                     // Create simple HTML with just the download button
+                     const testHTML = `
+                         <div style="background: #d4edda; border: 2px solid #c3e6cb; padding: 20px; border-radius: 10px;">
+                             <h4 style="color: #155724; text-align: center; margin-bottom: 15px;">
+                                 <i class="fas fa-check-circle"></i> ${data.message}
+                             </h4>
+                             
+                             <p style="color: #155724; text-align: center; font-size: 1rem; margin-top: 15px;">
+                                 ✅ Your image is ready! Click the download button below to save it.
+                             </p>
+                             
+                             <div style="text-align: center; margin-top: 20px;">
+                                 <button class="btn main-download-btn" onclick="downloadImage('${data.image}', 'encrypted_image.png')">
+                                     <i class="fas fa-download"></i> Download Encrypted Image
+                                 </button>
+                             </div>
+                         </div>
+                     `;
+                     
+                                          console.log('Test HTML created, length:', testHTML.length);
+                     console.log('Test HTML preview:', testHTML.substring(0, 200) + '...');
+                     
+                     console.log('Setting result HTML, length:', testHTML.length);
+                     result.innerHTML = testHTML;
+                     
+                     // Force the result to be visible with multiple approaches
+                     result.style.display = 'block';
+                     result.style.visibility = 'visible';
+                     result.style.opacity = '1';
+                     result.classList.add('active');
+                     
+                     console.log('Result element updated, display:', result.style.display);
+                     console.log('Result should now be visible');
+                     
+                     // Additional debugging
+                     setTimeout(() => {
+                         console.log('Result display after timeout:', result.style.display);
+                         console.log('Result computed style:', window.getComputedStyle(result).display);
+                         console.log('Result height:', result.offsetHeight);
+                         console.log('Result innerHTML length:', result.innerHTML.length);
+                         console.log('Result innerHTML content:', result.innerHTML);
+                         console.log('Result children count:', result.children.length);
+                         if (result.children.length > 0) {
+                             console.log('First child:', result.children[0]);
+                             console.log('First child classes:', result.children[0].className);
+                         }
+                     }, 100);
+                     
+                                          // Auto-download removed - user must click download button
+                     
+
+                } else {
+                    console.log('Creating error result HTML...');
+                    result.innerHTML = `
+                        <div class="result error">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error in form submission:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                        <p>An error occurred while processing the image.</p>
+                    </div>
+                `;
+            } finally {
+                console.log('Hiding loading, showing result...');
+                loading.style.display = 'none';
+                result.style.display = 'block';
+                console.log('Final result display:', result.style.display);
+            }
+        });
+
+        // Handle extract form submission
+        document.getElementById('extract-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loading = document.getElementById('extract-loading');
+            const result = document.getElementById('extract-result');
+            
+            // Get encryption method
+            const encryptionMethod = document.getElementById('extract-encryption').value;
+            formData.append('encryption_method', encryptionMethod);
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/extract', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                console.log('Extract response:', data);
+                
+                                 if (data.success) {
+                     console.log('Extraction successful, setting result HTML...');
+                     result.innerHTML = `
+                         <div class="result success" style="background: #d4edda; border: 2px solid #c3e6cb; padding: 20px; border-radius: 10px; display: block;">
+                             <h4 style="color: #155724; text-align: center; margin-bottom: 15px;">
+                                 <i class="fas fa-check-circle"></i> ${data.message}
+                             </h4>
+                             <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 10px; border: 1px solid #dee2e6;">
+                                 <strong style="color: #155724;">Hidden Text:</strong><br>
+                                 <p style="margin-top: 10px; font-family: monospace; word-wrap: break-word; font-size: 1.1rem; color: #333; background: white; padding: 10px; border-radius: 5px; border: 1px solid #ced4da;">${data.text}</p>
+                             </div>
+                         </div>
+                     `;
+                     console.log('Result HTML set, forcing display...');
+                     result.style.display = 'block';
+                     result.style.visibility = 'visible';
+                     result.style.opacity = '1';
+                                          console.log('Result should now be visible');
+                                  } else {
+                     console.log('Extraction failed, showing error...');
+                     result.innerHTML = `
+                         <div class="result error" style="background: #f8d7da; border: 2px solid #f5c6cb; padding: 20px; border-radius: 10px; display: block;">
+                             <h4 style="color: #721c24; text-align: center; margin-bottom: 15px;">
+                                 <i class="fas fa-exclamation-triangle"></i> No Hidden Text Found
+                             </h4>
+                             <p style="color: #721c24; text-align: center; font-size: 1rem;">
+                                 ${data.error}
+                             </p>
+                         </div>
+                     `;
+                     result.style.display = 'block';
+                     result.style.visibility = 'visible';
+                     result.style.opacity = '1';
+                     console.log('Error result should now be visible');
+                 }
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                        <p>An error occurred while extracting text from the image.</p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+        // Handle hide image form submission
+        document.getElementById('hide-image-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loading = document.getElementById('hide-image-loading');
+            const result = document.getElementById('hide-image-result');
+            
+            console.log('Hide image form submitted, showing loading...');
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            result.classList.remove('active');
+            result.innerHTML = '';
+            
+            try {
+                console.log('Sending request to /hide-image...');
+                const response = await fetch('/hide-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response received, status:', response.status);
+                const data = await response.json();
+                
+                console.log('Hide image response data:', data);
+                
+                if (data.success) {
+                    console.log('Creating success result HTML...');
+                    
+                    const successHTML = `
+                        <div style="background: #d4edda; border: 2px solid #c3e6cb; padding: 20px; border-radius: 10px;">
+                            <h4 style="color: #155724; text-align: center; margin-bottom: 15px;">
+                                <i class="fas fa-check-circle"></i> ${data.message}
+                            </h4>
+                            
+                            <p style="color: #155724; text-align: center; font-size: 1rem; margin-top: 15px;">
+                                ✅ Your steganographed image is ready! Click the download button below to save it.
+                            </p>
+                            
+                            <div style="text-align: center; margin-top: 20px;">
+                                <button class="btn main-download-btn" onclick="downloadImage('${data.image}', 'steganographed_image.png')">
+                                    <i class="fas fa-download"></i> Download Steganographed Image
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    result.innerHTML = successHTML;
+                    result.style.display = 'block';
+                    result.style.visibility = 'visible';
+                    result.style.opacity = '1';
+                    result.classList.add('active');
+                    
+                } else {
+                    console.log('Creating error result HTML...');
+                    result.innerHTML = `
+                        <div class="result error">
+                            <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error in hide image form submission:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                        <p>An error occurred while processing the images.</p>
+                    </div>
+                `;
+            } finally {
+                console.log('Hiding loading, showing result...');
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+        // Handle extract image form submission
+        document.getElementById('extract-image-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const loading = document.getElementById('extract-image-loading');
+            const result = document.getElementById('extract-image-result');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/extract-image', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                console.log('Extract image response:', data);
+                
+                if (data.success) {
+                    console.log('Extraction successful, setting result HTML...');
+                    result.innerHTML = `
+                        <div class="result success" style="background: #d4edda; border: 2px solid #c3e6cb; padding: 20px; border-radius: 10px; display: block;">
+                            <h4 style="color: #155724; text-align: center; margin-bottom: 15px;">
+                                <i class="fas fa-check-circle"></i> ${data.message}
+                            </h4>
+                            
+                            <div style="text-align: center; margin-top: 20px;">
+                                <img src="data:image/png;base64,${data.image}" alt="Extracted Image" style="max-width: 100%; max-height: 300px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); margin-bottom: 15px;">
+                            </div>
+                            
+                            <div style="text-align: center;">
+                                <button class="btn main-download-btn" onclick="downloadImage('${data.image}', 'extracted_image.png')">
+                                    <i class="fas fa-download"></i> Download Extracted Image
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    result.style.display = 'block';
+                    result.style.visibility = 'visible';
+                    result.style.opacity = '1';
+                } else {
+                    console.log('Extraction failed, showing error...');
+                    result.innerHTML = `
+                        <div class="result error" style="background: #f8d7da; border: 2px solid #f5c6cb; padding: 20px; border-radius: 10px; display: block;">
+                            <h4 style="color: #721c24; text-align: center; margin-bottom: 15px;">
+                                <i class="fas fa-exclamation-triangle"></i> No Hidden Image Found
+                            </h4>
+                            <p style="color: #721c24; text-align: center; font-size: 1rem;">
+                                ${data.error}
+                            </p>
+                        </div>
+                    `;
+                    result.style.display = 'block';
+                    result.style.visibility = 'visible';
+                    result.style.opacity = '1';
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                result.innerHTML = `
+                    <div class="result error">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Error</h4>
+                        <p>An error occurred while extracting image from the stego image.</p>
+                    </div>
+                `;
+            } finally {
+                loading.style.display = 'none';
+                result.style.display = 'block';
+            }
+        });
+
+                 // Download image function
+         function downloadImage(base64Data, filename) {
+             try {
+                 // Remove data URL prefix if present
+                 if (base64Data.startsWith('data:image/')) {
+                     base64Data = base64Data.split(',')[1];
+                 }
+                 
+                 // Create a blob from the base64 data
+                 const byteCharacters = atob(base64Data);
+                 const byteNumbers = new Array(byteCharacters.length);
+                 for (let i = 0; i < byteCharacters.length; i++) {
+                     byteNumbers[i] = byteCharacters.charCodeAt(i);
+                 }
+                 const byteArray = new Uint8Array(byteNumbers);
+                 const blob = new Blob([byteArray], {type: 'image/png'});
+                 
+                 // Create download link
+                 const url = window.URL.createObjectURL(blob);
+                 const link = document.createElement('a');
+                 link.href = url;
+                 link.download = filename;
+                 link.style.display = 'none';
+                 
+                 // Trigger download
+                 document.body.appendChild(link);
+                 link.click();
+                 
+                 // Cleanup
+                 setTimeout(() => {
+                     document.body.removeChild(link);
+                     window.URL.revokeObjectURL(url);
+                 }, 100);
+                 
+             } catch (error) {
+                 console.error('Download failed:', error);
+             }
+         }
+
+        // Copy image to clipboard function
+        function copyImageToClipboard(base64Data) {
+            try {
+                // Create a blob from the base64 data
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], {type: 'image/png'});
+                
+                // Copy to clipboard
+                navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]).then(() => {
+                    showNotification('✅ Image copied to clipboard!', 'success');
+                }).catch(() => {
+                    showNotification('❌ Copy failed. Try downloading instead.', 'error');
+                });
+            } catch (error) {
+                console.error('Copy failed:', error);
+                showNotification('❌ Copy failed. Try downloading instead.', 'error');
+            }
+        }
+
+        
+
+         
+
+        // Drag and drop functionality
+        function setupDragAndDrop(inputId) {
+            const input = document.getElementById(inputId);
+            const label = input.nextElementSibling;
+            
+            label.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                label.style.borderColor = '#667eea';
+                label.style.background = '#f0f4ff';
+            });
+            
+            label.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                label.style.borderColor = '#ddd';
+                label.style.background = '#f8f9fa';
+            });
+            
+            label.addEventListener('drop', (e) => {
+                e.preventDefault();
+                label.style.borderColor = '#ddd';
+                label.style.background = '#f8f9fa';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    input.files = files;
+                    handleFileSelect(input);
+                }
+            });
+        }
+
+        setupDragAndDrop('hide-image');
+        setupDragAndDrop('extract-image');
+        setupDragAndDrop('cover-image');
+        setupDragAndDrop('secret-image');
+        setupDragAndDrop('stego-image');
+    </script>
+</body>
+</html> 
